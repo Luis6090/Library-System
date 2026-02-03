@@ -1,4 +1,4 @@
-package database.exception;
+package exception;
 
 public class DataBaseException extends RuntimeException{
     
