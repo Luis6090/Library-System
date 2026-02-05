@@ -86,8 +86,27 @@ public class ReaderDAOImpl implements InterfaceDAO<Long, Reader> {
     }
 
     @Override
-    public void delete(Long aLong) {
+    public void delete(Long id) {
+        Connection connection = DataBaseConnection.getConnection();
+        PreparedStatement preparedStatement;
 
+        try{
+            preparedStatement = connection.prepareStatement(
+                    "DELETE FROM reader " +
+                         "WHERE idreader = ?"
+            );
+
+            preparedStatement.setLong(1, id);
+
+            int rowUpdate = preparedStatement.executeUpdate();
+            if(rowUpdate > 0){
+                System.out.println("Delete suscess!");
+            }
+            DataBaseConnection.closeStatement(preparedStatement);
+            DataBaseConnection.closeConnection(connection);
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -100,41 +119,4 @@ public class ReaderDAOImpl implements InterfaceDAO<Long, Reader> {
         return List.of();
     }
 
-    private String stringBuilderSQL(Reader reader){
-        StringBuilder stringSQL = new StringBuilder("Update reader SET");
-
-        if(!reader.getName().isBlank()){
-            stringSQL.append("namereader = ?");
-        }
-        if(!reader.getCPF().isBlank()){
-            stringSQL.append("cpf = ?");
-        }
-        if(!reader.getEmail().isBlank()){
-            stringSQL.append("email = ?");
-        }
-        if(!reader.getPhoneNumber().isBlank()){
-            stringSQL.append("phoneNumber = ?");
-        }
-        if(!reader.getCEP().isBlank()){
-            stringSQL.append("cep = ?");
-        }
-        if(!reader.getAdressLine().isBlank()){
-            stringSQL.append("adressLine = ?");
-        }
-        if(!reader.getAdressNumber().isBlank()){
-            stringSQL.append("adressNumber = ?");
-        }
-        if(!reader.getNeighborhood().isBlank()){
-            stringSQL.append("neighborhood = ?");
-        }
-        if(!reader.getCity().isBlank()){
-            stringSQL.append("city = ?");
-        }
-        if(!reader.getStateCountry().isBlank()){
-            stringSQL.append("stateCountry = ?");
-        }
-        stringSQL.append("WHERE id = ?");
-
-        return stringSQL.toString();
-    }
 }
