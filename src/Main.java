@@ -7,5 +7,9 @@ import java.sql.Connection;
 
 public class Main {
     public static void main(String[] args) {
+        InterfaceDAO<Long, Reader> repositoryReader = new ReaderDAOImpl();
+        Reader reader1 = new Reader(null, null, null, "gabrielle10@gmail.com", "9987654321", null, null, null,
+                                    null, null, null);
+        repositoryReader.update(6L, reader1);
     }
 }

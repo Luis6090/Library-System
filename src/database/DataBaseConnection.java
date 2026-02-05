@@ -8,8 +8,6 @@ import java.sql.*;
 import java.util.Properties;
 
 public class DataBaseConnection {
-    private static Connection connection = null;
-
     private static Properties loadFile(){
         //Utilizem o arquivo template.properties para o acesso do banco de dados
         try(FileInputStream file = new FileInputStream("config.properties")){
@@ -23,19 +21,17 @@ public class DataBaseConnection {
     }
 
     public static Connection getConnection(){
-        if(connection == null) {
-            try {
-                Properties fileProperties = loadFile();
-                String url = fileProperties.getProperty("url");
-                connection = DriverManager.getConnection(url, fileProperties);
-            } catch (SQLException SQLError) {
-                throw new DataBaseException(SQLError.getMessage());
-            }
+        try {
+            Properties fileProperties = loadFile();
+            String url = fileProperties.getProperty("url");
+            Connection connection = DriverManager.getConnection(url, fileProperties);
+            return connection;
+        } catch (SQLException SQLError) {
+            throw new DataBaseException(SQLError.getMessage());
         }
-        return connection;
     }
 
-    public static void closeConnection(){
+    public static void closeConnection(Connection connection){
         try{
             connection.close();
         } catch (SQLException SQLError) {
