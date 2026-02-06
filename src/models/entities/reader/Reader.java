@@ -125,4 +125,19 @@ public class Reader {
     public void setStateCountry(String stateCountry) {
         this.stateCountry = stateCountry;
     }
+
+    @Override
+    public String toString() {
+        return "id=" + id +
+                ", name='" + name + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", cep='" + cep + '\'' +
+                ", adressLine='" + adressLine + '\'' +
+                ", adressNumber='" + adressNumber + '\'' +
+                ", neighborhood='" + neighborhood + '\'' +
+                ", city='" + city + '\'' +
+                ", stateCountry='" + stateCountry;
+    }
 }

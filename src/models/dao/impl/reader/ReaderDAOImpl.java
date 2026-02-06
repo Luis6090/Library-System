@@ -6,6 +6,7 @@ import database.DataBaseConnection;
 import models.entities.reader.Reader;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReaderDAOImpl implements InterfaceDAO<Long, Reader> {
@@ -110,13 +111,74 @@ public class ReaderDAOImpl implements InterfaceDAO<Long, Reader> {
     }
 
     @Override
-    public Reader findByID(Long aLong) {
-        return null;
+    public Reader findByID(Long id) {
+        Connection connection = DataBaseConnection.getConnection();
+        PreparedStatement preparedStatement;
+
+        try{
+            preparedStatement = connection.prepareStatement(
+                    "SELECT * FROM reader WHERE idreader = ?"
+            );
+            preparedStatement.setLong(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Reader reader = null;
+
+            if(resultSet.next()){
+                reader = new Reader(resultSet.getLong("idreader"),
+                                    resultSet.getString("nameReader"),
+                                    resultSet.getString("CPF"),
+                                    resultSet.getString("email"),
+                                    resultSet.getString("phoneNumber"),
+                                    resultSet.getString("CEP"),
+                                    resultSet.getString("adressLine"),
+                                    resultSet.getString("adressNumber"),
+                                    resultSet.getString("neighborhood"),
+                                    resultSet.getString("city"),
+                                    resultSet.getString("stateCountry"));
+            }
+            DataBaseConnection.closeResultSet(resultSet);
+            DataBaseConnection.closeStatement(preparedStatement);
+            DataBaseConnection.closeConnection(connection);
+            return reader;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public List<Reader> findAll() {
-        return List.of();
+        Connection connection = DataBaseConnection.getConnection();
+        PreparedStatement preparedStatement;
+
+        try{
+            preparedStatement = connection.prepareStatement(
+                    "SELECT * FROM reader ORDER BY idreader"
+            );
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Reader> readerList = new ArrayList<>();
+
+            while(resultSet.next()){
+                  readerList.add(new Reader(resultSet.getLong("idreader"),
+                          resultSet.getString("nameReader"),
+                          resultSet.getString("CPF"),
+                          resultSet.getString("email"),
+                          resultSet.getString("phoneNumber"),
+                          resultSet.getString("CEP"),
+                          resultSet.getString("adressLine"),
+                          resultSet.getString("adressNumber"),
+                          resultSet.getString("neighborhood"),
+                          resultSet.getString("city"),
+                          resultSet.getString("stateCountry")));
+            }
+            DataBaseConnection.closeResultSet(resultSet);
+            DataBaseConnection.closeStatement(preparedStatement);
+            DataBaseConnection.closeConnection(connection);
+            return readerList;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
