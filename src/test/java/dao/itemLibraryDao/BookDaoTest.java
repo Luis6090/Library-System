@@ -23,10 +23,10 @@ public class BookDaoTest {
 
     @BeforeAll
     public static void setup(){
-        List<Author> authors = new ArrayList<>(Arrays.asList(new Author(null, "Rogério da Silva")));
+        List<Author> authors = new ArrayList<>(Arrays.asList(new Author(null, "Lima Sousa"), new Author(null, "Jorge Lima")));
         List<Publisher> publishers = new ArrayList<>(Arrays.asList(new Publisher(null, "LeonHart")));
-        book = new Book(null, "A Empregada", 5, "", LocalDate.of(2025, 11, 8),
-                Status.AVAILABLE, TypeItem.BOOK, "9780997025491", 6, Gender.MYSTERY, authors, publishers);
+        book = new Book(null, "Favela e Senzala", 20, "", LocalDate.of(1973, 6, 22),
+                Status.AVAILABLE, TypeItem.BOOK, "9785617985491", 2, Gender.ROMANCE, authors, publishers);
 
         bookDao = new BookDaoImpl();
     }
@@ -44,5 +44,10 @@ public class BookDaoTest {
         Book updateBook = new Book(null, "Crepusculo", 8, "Livro sobre vampiros", null, null,
                                     null, "1234997029091", 3, Gender.ROMANCE, null, null);
         bookDao.update(2L, updateBook);
+    }
+
+    @Test
+    public void deleteBookInDataBase(){
+        bookDao.delete(4L);
     }
 }

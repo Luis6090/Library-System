@@ -39,7 +39,7 @@ public class BookDaoImpl implements BookDao {
             insertPublisher(idBook, connection, object);
 
             connection.commit();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             try {
                 connection.rollback();
             } catch (SQLException ex) {
@@ -53,14 +53,14 @@ public class BookDaoImpl implements BookDao {
         }
     }
 
-    private void insertPublisher(Long idBook, Connection connection, Book object) throws SQLException {
+    private void insertPublisher(Long idBook, Connection connection, Book object) throws Exception {
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT INTO publisher " +
                      "(idBookId, namePublisher) " +
                      "VALUES (?, ?)"
         );
 
-        for (int row = 0; row < object.getAuthors().size(); row++){
+        for (int row = 0; row < object.getPublishers().size(); row++){
             preparedStatement.setLong(1, idBook);
             preparedStatement.setString(2, object.getPublishers().get(row).getName());
             preparedStatement.addBatch();
@@ -70,7 +70,7 @@ public class BookDaoImpl implements BookDao {
         if(Arrays.stream(linesUpdates).allMatch(x -> x > 0)) System.out.println("Insert publishers success!!");
     }
 
-    private void insertAuthor(Long idBook, Connection connection, Book object) throws SQLException {
+    private void insertAuthor(Long idBook, Connection connection, Book object) throws Exception {
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT INTO author " +
                     "(idBookId, nameAuthor) " +
@@ -130,7 +130,75 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public void delete(Long id) {
+        Connection connection = DataBaseConnection.getConnection();
+        PreparedStatement preparedStatement = null;
 
+        try{
+            connection.setAutoCommit(false);
+            deleteAuthors(id, connection);
+            deletePublishers(id, connection);
+            preparedStatement = connection.prepareStatement(
+                    "DELETE FROM book " +
+                        "WHERE idItemId = ?"
+            );
+
+            preparedStatement.setLong(1, id);
+            
+            int lineUpdate = preparedStatement.executeUpdate();
+            if(lineUpdate > 0) System.out.println("Delete one book success!!");
+
+            itemLibraryDao.delete(id, connection);
+            connection.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            DataBaseConnection.closeStatement(preparedStatement);
+            DataBaseConnection.closeConnection(connection);
+        }
+    }
+
+    private void deletePublishers(Long id, Connection connection) {
+        PreparedStatement preparedStatement = null;
+
+        try{
+            preparedStatement = connection.prepareStatement(
+                    "DELETE FROM publisher " +
+                        "WHERE idBookId = ?"
+            );
+
+            preparedStatement.setLong(1, id);
+
+            int lineUpdate = preparedStatement.executeUpdate();
+            if(lineUpdate > 0) System.out.println("Delete one author success!!");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            DataBaseConnection.closeStatement(preparedStatement);
+        }
+
+    }
+
+    private void deleteAuthors(Long id, Connection connection) {
+        PreparedStatement preparedStatement = null;
+
+        try{
+            preparedStatement = connection.prepareStatement(
+                    "DELETE FROM author " +
+                        "WHERE idBookId = ?"
+            );
+
+            preparedStatement.setLong(1, id);
+
+            int lineUpdate = preparedStatement.executeUpdate();
+            if(lineUpdate > 0) System.out.println("Delete one author success!!");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            DataBaseConnection.closeStatement(preparedStatement);
+        }
     }
 
     @Override
